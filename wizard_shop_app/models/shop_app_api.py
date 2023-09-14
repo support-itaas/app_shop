@@ -226,12 +226,13 @@ class WizardShopApi(models.Model):
             return {'success': 'False', 'message': 'Please provide a payment date in parameter', 'data': []}
         else:
             # print ('shop_user----',shop_user)
-            # shop_user = 399
+            shop_user = 399
             # print('DATA---',data)
             # user_id = self.env['res.partner'].sudo().search([('user_ids.id', '=', shop_user)], limit=1)
-            user_id = self.env['res.partner'].sudo().search([('user_ids.id', '=', shop_user)], limit=1)
-            service_id = self.env['product.product'].sudo().search([('id', '=', service)], limit=1)
-            branch_id = self.env['project.project'].sudo().search([('id', '=', branch)], limit=1)
+            user_id = self.env['res.partner'].sudo().search([('user_ids.id', '=', shop_user)],limit=1)
+            service_id = self.env['product.product'].sudo().search([('id', '=', service)],limit=1)
+            branch_id = self.env['project.project'].sudo().search([('id', '=', branch)],limit=1)
+
 
             # active_pos_session_id = self.env['pos.config'].sudo().search(
             #     []).filtered(lambda s: s.current_session_state == 'opened' and s.branch_id.id == branch_id.id)
@@ -273,7 +274,7 @@ class WizardShopApi(models.Model):
                     data = order_id.read()[0]
                     data['journal'] = journal_id.id
                     data['amount'] = order_id.amount_total
-                    print('DATA to ADD Payment---', data)
+                    print ('DATA to ADD Payment---',data)
                     # data = {'session_id': (order_id.session_id.id, order_id.session_id.name),
                     #         'journal_id': (journal_id.id, journal_id.name), 'amount': int(order_id.amount_total),
                     #         'payment_name': False, 'payment_date': str(payment_date),
@@ -285,10 +286,6 @@ class WizardShopApi(models.Model):
                     order_id.add_payment(data)
                     if payment_method in ['offline', 'redeem']:
                         order_id.action_pos_order_paid()
-                        order_ref = str(order_id.name.upper())
-                        order_ref = order_ref.replace('/', '')
-                        order_ref = order_ref.replace(' ', '')
-                        order_id.name_ref = order_ref
                     return {"success": "true", "message": "Order and Payment created",
                             "data": [{"order_id": order_id.id, "payment_id": order_id.statement_ids.ids,
                                       "payment_amount": order_id.amount_paid}]}
@@ -304,7 +301,8 @@ class WizardShopApi(models.Model):
     def payment_slip_verification(self, data):
         transref = data.get('transref')
         sendingbank = data.get('sendingbank')
-        url = 'https://api-sandbox.partners.scb/partners/sandbox/v1/payment/billpayment/transactions/{' + transref + '}?sendingBank=' + sendingbank + ' '
+        url = 'https://api-uat.partners.scb/partners/v1/payment/billpayment/transactions/{' + transref + '}?sendingBank=' + sendingbank + ' '
+        # url = 'https://api-sandbox.partners.scb/partners/sandbox/v1/payment/billpayment/transactions/{' + transref + '}?sendingBank=' + sendingbank + ' '
         payload = {}
         headers = {
             'authorization': 'Bearer 994f52ea-ef3d-4328-a073-591f95fcc38c',
@@ -456,64 +454,6 @@ class WizardShopApi(models.Model):
     #             return {"success": "false", "message": "QR Code not added", "data": []}
     #     else:
     #         return {"success": "false", "message": "Cant find branch", "data": []}
-
-    def scb_slip_verification(self, data):
-
-        access_token = data.get('access_token')
-        transref = data.get('transref')
-        if not access_token:
-            return {"success": "false", "message": "Please provide access token in parameter", "data": []}
-        if not transref:
-            return {"success": "false", "message": "Please provide transref in parameter", "data": []}
-
-        access_token = data.get('access_token')
-        transref = data.get('transref')
-        url = "https://api-sandbox.partners.scb/partners/sandbox/v1/payment/billpayment/transactions/%s?sendingBank=014" % (
-            transref)
-        payload = {}
-        headers = {
-            'authorization': 'Bearer ' + access_token,
-            'requestUID': 'ca22e965-4425-4f84-b18e-c17e771d5178',
-            'resourceOwnerID': 'l7945d71c7c4e34fe686520160e5268518',
-            'accept-language': 'EN',
-        }
-
-        response = requests.request("GET", url, headers=headers, data=payload)
-        if response.text:
-            response = json.loads(response.text)
-        return response
-
-    def scb_payment_inquiry(self, data):
-
-        access_token = data.get('access_token')
-        if not access_token:
-            return {"success": "false", "message": "Please provide access token in parameter", "data": []}
-        biller_id = data.get('biller_id')
-        if not biller_id:
-            return {"success": "false", "message": "Please provide biller id in parameter", "data": []}
-        reference1 = data.get('reference1')
-        if not reference1:
-            return {"success": "false", "message": "Please provide reference1 in parameter", "data": []}
-        transaction_date = data.get('transaction_date')
-        if not transaction_date:
-            return {"success": "false", "message": "Please provide transaction date in parameter", "data": []}
-        event_code = data.get('event_code')
-        if not event_code:
-            return {"success": "false", "message": "Please provide event code in parameter", "data": []}
-        url = "https://api-sandbox.partners.scb/partners/sandbox/v1/payment/billpayment/inquiry?billerId=%s&reference1=%s&transactionDate=%s&eventCode=%s" % (
-            biller_id, reference1, transaction_date, event_code)
-        payload = {}
-        headers = {
-            'authorization': 'Bearer ' + access_token,
-            'requestUID': '19277c9d-2393-4e73-bd19-b7ab9bb64b3a',
-            'resourceOwnerID': 'l7945d71c7c4e34fe686520160e5268518',
-            'accept-language': 'EN',
-            'content-type': 'application/json',
-        }
-        response = requests.request("GET", url, headers=headers, data=payload)
-        if response.text:
-            response = json.loads(response.text)
-        return response
 
     def redeem_coupon(self, data):
         customer = data.get('customer')

@@ -4,7 +4,7 @@
 
 {
     'name': 'Wizard Shop App',
-    'version': '11.0.3.5',
+    'version': '11.0.3.4',
     'summary': 'Wizard Shop App',
     'sequence': 1,
     'author': 'Technaureus Info Solutions Pvt. Ltd.',

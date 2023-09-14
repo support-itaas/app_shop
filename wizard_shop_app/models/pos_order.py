@@ -12,7 +12,7 @@ class PosOrder(models.Model):
     client_order_id = fields.Char(string='Client Order Key')
     expire_on = fields.Datetime(string='Expire On')
     is_payment_failed = fields.Boolean(default=False)
-    name_ref = fields.Char()
+
     @api.model
     def create(self, vals):
         res = super(PosOrder, self).create(vals)
