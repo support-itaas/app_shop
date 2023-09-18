@@ -20,7 +20,7 @@ class WizardSlipVerification(models.Model):
             'res.config.settings', "scb_api_key")
         scb_api_secret = IrDefault.get(
             'res.config.settings', "scb_api_secret")
-        url = "https://api-sandbox.partners.scb/partners/sandbox/v1/oauth/token"
+        url = "https://api-uat.partners.scb/partners/v1/oauth/token"
         payload = json.dumps({
             "applicationKey": scb_api_key,
             "applicationSecret": scb_api_secret
@@ -37,7 +37,7 @@ class WizardSlipVerification(models.Model):
         # Extract the accessToken value
         try:
             access_token = parsed_response['data']['accessToken']
-            url = "https://api-sandbox.partners.scb/partners/sandbox/v1/payment/billpayment/transactions/%s?sendingBank=014" % (
+            url = "https://api-uat.partners.scb/partners/v1/payment/billpayment/transactions/%s?sendingBank=014" % (
                 transref)
             payload = {}
             headers = {

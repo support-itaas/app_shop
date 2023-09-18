@@ -29,7 +29,7 @@ class WizardInquiry(models.Model):
         biller_id = IrDefault.get(
             'res.config.settings', "biller_id")
 
-        url = "https://api-sandbox.partners.scb/partners/sandbox/v1/oauth/token"
+        url = "https://api-uat.partners.scb/partners/v1/oauth/token"
         payload = json.dumps({
             "applicationKey": scb_api_key,
             "applicationSecret": scb_api_secret
@@ -46,7 +46,7 @@ class WizardInquiry(models.Model):
         # Extract the accessToken value
         access_token = parsed_response['data']['accessToken']
 
-        url = "https://api-sandbox.partners.scb/partners/sandbox/v1/payment/billpayment/inquiry?billerId="+biller_id+"&reference1="+reference_1+"&transactionDate="+transaction_date+"&eventCode=00300100"
+        url = "https://api-uat.partners.scb/partners/v1/payment/billpayment/inquiry?billerId="+biller_id+"&reference1="+reference_1+"&transactionDate="+transaction_date+"&eventCode=00300100"
         payload = {}
         headers = {
             'authorization': 'Bearer ' + access_token,

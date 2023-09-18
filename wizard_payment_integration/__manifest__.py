@@ -4,7 +4,7 @@
 
 {
     'name': 'Wizard Payment Integrations',
-    'version': '11.0.3.9',
+    'version': '11.0.4.0',
     'category': 'Wizard Payment Integrations',
     'sequence': 1,
     'author': 'Technaureus Info Solutions Pvt. Ltd',
